@@ -1,3 +1,10 @@
 #!/bin/bash
-
-python $ATSSH_ROOT/bin/atssh.py $@
+args=`$@`
+result=`python $ATSSH_ROOT/atssh.py $args`
+exit_code=$?
+if [[ $exit_code == 0 ]]; then
+    expect -c "$result"
+else
+  echo "exit_code: $exit_code"
+  echo "$result"
+fi

@@ -38,8 +38,8 @@ def decrypt(to_decrypt):
     if not to_decrypt.startswith('new___'):
         return to_decrypt
     to_decrypt = to_decrypt.lstrip('new___')
-    strings = decry(to_decrypt.encode()).decode() if is_bytes else decry(
-        to_decrypt)
+    strings = decry(
+        to_decrypt.encode()).decode() if is_bytes else decry(to_decrypt)
     result = []
     num = 0
     for i in strings:
@@ -106,7 +106,7 @@ expect {{
         if self.has_cache(ip):
             login_info = self.query_from_ip(ip)
             cmd = self.EXPECT_SSH.format(**login_info)
-            os.system("expect -c '{}'".format(cmd))
+            print(cmd)
         elif username and password:
             can_connect = test_connect(ip, int(port))
             if not can_connect:
@@ -116,12 +116,8 @@ expect {{
                                          username=username,
                                          password=password,
                                          port=port)
-            retcode = os.system("expect -c '{}'".format(cmd))
-            if retcode == 0:
-                self.record_login_info(ip, username, password, port)
-            else:
-                print('Please confirm login username or password')
-                sys.exit(1)
+            self.record_login_info(ip, username, password, port)
+            print(cmd)
         else:
             print('The {} has no cache and Cannot find Login'
                   'info in the input message'.format(ip))
@@ -146,10 +142,12 @@ expect {{
         return self.config.has_section(ip)
 
     def query_from_ip(self, ip):
-        return {'ip': ip,
-                'username': self.config.get(ip, 'username'),
-                'password': decrypt(self.config.get(ip, 'password')),
-                'port': self.config.get(ip, 'port')}
+        return {
+            'ip': ip,
+            'username': self.config.get(ip, 'username'),
+            'password': decrypt(self.config.get(ip, 'password')),
+            'port': self.config.get(ip, 'port')
+        }
 
     def record_login_info(self, ip, username, password, port):
         """
@@ -177,17 +175,20 @@ expect {{
 
 def parse_arg():
     parser = argparse.ArgumentParser(description='Simple ssh tool for mac')
-    parser.add_argument('host', nargs='?',
-                        help='Destnation host ip address')
-    parser.add_argument('-P', '--port', type=int, default=22,
-                        help='SSH protacol port (defalt 22)')
-    parser.add_argument('-u', '--user',
-                        help='SSH authentication username')
-    parser.add_argument('-p', '--pwd',
-                        help='SSH authentication password')
-    parser.add_argument('-a', '--all', action='store_true',
+    parser.add_argument('host', nargs='?', help='Destination host ip address')
+    parser.add_argument('-P',
+                        '--port',
+                        type=int,
+                        default=22,
+                        help='SSH protocol port (defalt 22)')
+    parser.add_argument('-u', '--user', help='SSH authentication username')
+    parser.add_argument('-p', '--pwd', help='SSH authentication password')
+    parser.add_argument('-a',
+                        '--all',
+                        action='store_true',
                         help='List all host ip addresses')
-    parser.add_argument('-d', '--delete',
+    parser.add_argument('-d',
+                        '--delete',
                         help='Delete the specified host record')
     args = parser.parse_args()
     if not any((args.host, args.all, args.delete)):
