@@ -116,7 +116,7 @@ expect {{
                                          username=username,
                                          password=password,
                                          port=port)
-            self.record_login_info(ip, username, password, port)
+            self.record_login_info(ip, username, password, str(port))
             print(cmd)
         else:
             print('The {} has no cache and Cannot find Login'

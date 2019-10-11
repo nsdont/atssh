@@ -1,9 +1,9 @@
 #!/bin/bash
-args=`$@`
-result=`python $ATSSH_ROOT/atssh.py $args`
+BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+result=`python $BASE_DIR/atssh.py $@`
 exit_code=$?
 if [[ $exit_code == 0 ]]; then
-    expect -c "$result"
+  expect -c "$result"
 else
   echo "exit_code: $exit_code"
   echo "$result"
